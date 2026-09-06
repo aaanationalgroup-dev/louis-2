@@ -1,0 +1,1070 @@
+<!DOCTYPE conf>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Louis's STEM Core Concepts</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bungee+Outline&display=swap');
+
+        /* Custom font for the wavy effect */
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-10px); }
+            75% { transform: translateY(10px); }
+        }
+
+        body {
+            background-color: green;
+            color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- Navigation Bar Styling --- */
+        .navbar-top {
+            background-color: pink; /* Pink background */
+            padding: 20px; 
+            height: 200px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative; 
+            overflow: hidden; 
+        }
+
+        .wavy-title-container {
+            display: block; 
+            white-space: normal; 
+            font-size: 6.66vw; 
+            font-weight: 900;
+            font-family: 'Bungee Outline', sans-serif; /* 仅保留，用于JS创建span，默认状态下文字透明 */
+            color: transparent; /* 确保初始状态（无文字时）为完全空白 */
+            text-shadow: none; 
+            -webkit-text-stroke: none;
+            text-align: center;
+            line-height: 1.1; 
+            margin-bottom: 0; 
+            word-break: break-word; 
+            transition: color 0.5s, text-shadow 0.5s, -webkit-text-stroke 0.5s; 
+        }
+        
+        /* 【修改点 1 & 2】：用户输入文字后，应用实心亮蓝色效果 */
+        .wavy-title-solid {
+            /* 使用一个实心字体（如Arial Black）来确保完全实心填充，满足“不能有空白”的要求 */
+            font-family: 'Arial Black', Arial, sans-serif !important; 
+            color: #00bfff !important; /* 亮蓝色 solid fill */
+            text-shadow: none !important; 
+            -webkit-text-stroke: 0px transparent !important; /* 移除描边 */
+            -webkit-text-fill-color: #00bfff !important; /* 确保填充色为亮蓝色 */
+        }
+
+        .wavy-title-container span {
+            display: inline-block;
+            animation: wave 2s ease-in-out infinite alternate;
+        }
+
+        #editTitleButton {
+            position: absolute; 
+            bottom: 10px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #0080ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            z-index: 10; 
+        }
+        /* ... (The rest of the CSS remains unchanged from the previous English-translated version) ... */
+        #editTitleButton:hover {
+            background-color: #00bfff;
+        }
+
+        .navbar-bottom {
+            background-color: #2e2e4a;
+            padding: 10px 20px;
+            border-top: 2px solid #00bfff;
+            position: relative;
+            height: 600px; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; 
+        }
+
+        .upload-controls {
+            align-self: flex-end; 
+            margin-top: auto; 
+            margin-right: 10px; 
+            margin-bottom: 10px; 
+            z-index: 10; 
+        }
+
+        .image-slideshow {
+            flex-grow: 1; 
+            width: 100%;
+            display: flex;
+            overflow: hidden;
+            position: absolute; 
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .image-slideshow img {
+            min-width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            transition: opacity 0.8s ease-in-out; 
+            opacity: 0; 
+            position: absolute; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .image-slideshow img.active {
+            opacity: 1; 
+        }
+
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .btn {
+            border: 2px solid #00bfff;
+            color: white;
+            background-color: #1a1a2e;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #00bfff;
+        }
+
+        .upload-btn-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            opacity: 0; 
+            cursor: pointer;
+            font-size: 0; 
+        }
+
+        /* --- Main Content Styling --- */
+        .main-content {
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: black;
+            text-align: center;
+        }
+
+        .story-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 2px solid black;
+            background-color: #e0ffe0; 
+            border-radius: 10px;
+        }
+        
+        /* 默认隐藏故事内容 */
+        #storiesContainer, #quizContainer {
+            display: none; 
+        }
+
+        /* 播放时高亮显示当前故事的样式 */
+        .story-section.highlighted h3,
+        .quiz-question-card.highlighted {
+            background-color: #4CAF50; /* Green background for highlight */
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .quiz-question-card {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid #333;
+            background-color: #fff9e6; /* Light yellow background */
+            border-radius: 10px;
+        }
+
+        .story-text, .quiz-story-text {
+            font-size: 1.4em; 
+            line-height: 1.6;
+        }
+
+        .question {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .options label {
+            display: block;
+            margin-top: 5px;
+            font-weight: normal;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .options label:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* --- Audio Player and Full Text Container --- */
+        .audio-controls-container {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* 按钮居中 */
+            gap: 20px; /* Space between buttons */
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        /* 新增： Quiz Mode Navigation Buttons Container */
+        #quizNavigation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        #playButton, #quizModeButton {
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 0;
+            transition: all 0.1s;
+        }
+        
+        /* Style for the two main control buttons */
+        #playButton {
+            background-color: #ff4500; /* Original orange for Play */
+            box-shadow: 0 5px 0 #cd3700;
+        }
+
+        /* New: Stop/Active state for Play button */
+        #playButton.active-stop {
+            background-color: #dc3545; /* Red for Stop */
+            box-shadow: 0 5px 0 #bd2130;
+        }
+
+        #playButton:hover {
+            background-color: #ff6347;
+        }
+        #playButton:active {
+            box-shadow: 0 2px 0 #cd3700;
+            transform: translateY(3px);
+        }
+        
+        #quizModeButton {
+            background-color: #007bff; /* Blue for Quiz */
+            box-shadow: 0 5px 0 #0056b3;
+        }
+        #quizModeButton:hover {
+            background-color: #0088ff;
+        }
+        #quizModeButton:active {
+            box-shadow: 0 2px 0 #0056b3;
+            transform: translateY(3px);
+        }
+
+        /* New: Next/Stop button for Quiz Mode */
+        #nextQuestionButton, #quizStopButton {
+            color: white;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 3px 0;
+            transition: all 0.1s;
+        }
+        
+        /* Style for disabled button to prevent double-click issues */
+        #nextQuestionButton:disabled {
+            background-color: #90ee90;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: translateY(0);
+        }
+
+        #nextQuestionButton {
+            background-color: #28a745; /* Green for Next */
+            box-shadow: 0 3px 0 #1e7e34;
+        }
+        #nextQuestionButton:active {
+            box-shadow: 0 1px 0 #1e7e34;
+            transform: translateY(2px);
+        }
+
+        #quizStopButton {
+            background-color: #dc3545; /* Red for Stop */
+            box-shadow: 0 3px 0 #bd2130;
+        }
+        #quizStopButton:active {
+            box-shadow: 0 1px 0 #bd2130;
+            transform: translateY(2px);
+        }
+
+        /* Dropdown Menu Styling (Full Text) */
+        .dropdown {
+            position: absolute;
+            left: 0; 
+            display: inline-block;
+        }
+
+        .dropdown-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            font-size: 1em;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 600px; 
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 20;
+            left: 0;
+            top: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: left;
+            max-height: 400px; 
+            overflow-y: auto;
+        }
+
+        .dropdown-content p {
+            white-space: pre-wrap; 
+            font-size: 1em;
+            color: #333;
+            margin: 0 0 10px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Styling for bold vocabulary words */
+        b {
+            font-weight: 800;
+            color: #8b0000; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar-top">
+        <div id="wavyTitle" class="wavy-title-container">
+            </div>
+        <button id="editTitleButton">Edit Title</button>
+    </div>
+
+    <div class="navbar-bottom">
+        <div class="image-slideshow" id="imageSlideshow">
+        </div>
+        <div class="upload-controls">
+            <div class="upload-btn-wrapper">
+                <button class="btn">Upload Images</button>
+                <input type="file" id="imageUpload" accept="image/*" multiple>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="audio-controls-container">
+            <div class="dropdown">
+                <button class="dropdown-button">Show Full Text</button>
+                <div class="dropdown-content" id="fullTextDropdown">
+                    </div>
+            </div>
+            <button id="playButton">▶️ Play Full Concepts</button>
+            <button id="quizModeButton">🧠 Start Quiz</button>
+        </div>
+
+        <h2 id="instructionHeader">Instruction: Listen to the core concepts being read aloud. As you listen, choose the correct definition for the bolded science/engineering term.</h2>
+
+        <div id="storiesContainer">
+            </div> 
+
+        <div id="quizContainer">
+            <div id="quizQuestionDisplay"></div>
+            <div id="quizNavigation">
+                <button id="nextQuestionButton">Next Question</button>
+                <button id="quizStopButton">Stop Reading</button>
+            </div>
+            <p id="quizStatus"></p>
+        </div>
+    </div>
+
+    <script>
+        // --- 概念和习题数据 (替换为新的 STEM 核心概念) ---
+        const rawStories = [
+            { index: 1, title: "1. Atom", text: "**Atom** – The smallest unit of matter that retains the properties of an element.", 
+              questions: [{ word: "Atom", options: ["A. Smallest unit of matter that retains the properties of an element", "B. Two or more atoms chemically bonded together", "C. The basic structural and functional unit of life"], answerIndex: 0 }] },
+            { index: 2, title: "2. Molecule", text: "**Molecule** – Two or more atoms chemically bonded together.", 
+              questions: [{ word: "Molecule", options: ["A. Two or more atoms chemically bonded together", "B. The capacity to do work", "C. A protein that accelerates chemical reactions"], answerIndex: 0 }] },
+            { index: 3, title: "3. Cell", text: "**Cell** – The basic structural and functional unit of life.", 
+              questions: [{ word: "Cell", options: ["A. The basic structural and functional unit of life", "B. Carries genetic information", "C. A type of chemical bond"], answerIndex: 0 }] },
+            { index: 4, title: "4. DNA", text: "**DNA** – Deoxyribonucleic acid; carries genetic information.", 
+              questions: [{ word: "DNA", options: ["A. Carries genetic information", "B. Involved in protein synthesis", "C. Movement of water across a semi-permeable membrane"], answerIndex: 0 }] },
+            { index: 5, title: "5. RNA", text: "**RNA** – Ribonucleic acid; involved in protein synthesis.", 
+              questions: [{ word: "RNA", options: ["A. Involved in protein synthesis", "B. Smallest unit of matter", "C. Energy of a moving object"], answerIndex: 0 }] },
+            { index: 6, title: "6. Enzyme", text: "**Enzyme** – A protein that accelerates chemical reactions.", 
+              questions: [{ word: "Enzyme", options: ["A. A protein that accelerates chemical reactions", "B. A measure of acidity", "C. An object's opposition to current flow"], answerIndex: 0 }] },
+            { index: 7, title: "7. Photosynthesis", text: "**Photosynthesis** – Process by which plants convert sunlight into chemical energy.", 
+              questions: [{ word: "Photosynthesis", options: ["A. Process by which plants convert sunlight into chemical energy", "B. Movement of molecules from high to low concentration", "C. Chemical bond formed through electron transfer"], answerIndex: 0 }] },
+            { index: 8, title: "8. Osmosis", text: "**Osmosis** – Movement of water across a semi-permeable membrane.", 
+              questions: [{ word: "Osmosis", options: ["A. Movement of water across a semi-permeable membrane", "B. Movement of any molecules from high to low concentration", "C. Voltage equals current times resistance"], answerIndex: 0 }] },
+            { index: 9, title: "9. Diffusion", text: "**Diffusion** – Movement of molecules from high to low concentration.", 
+              questions: [{ word: "Diffusion", options: ["A. Movement of molecules from high to low concentration", "B. Movement of water only", "C. Product of force and displacement"], answerIndex: 0 }] },
+            { index: 10, title: "10. pH", text: "**pH** – Measure of acidity or alkalinity of a solution.", 
+              questions: [{ word: "pH", options: ["A. Measure of acidity or alkalinity of a solution", "B. Force equals mass times acceleration", "C. Rate at which work is done"], answerIndex: 0 }] },
+            { index: 11, title: "11. Periodic Table", text: "**Periodic Table** – Arrangement of elements based on atomic number and properties.", 
+              questions: [{ word: "Periodic Table", options: ["A. Arrangement of elements based on atomic number and properties", "B. Bouncing back of light", "C. Zero electrical resistance"], answerIndex: 0 }] },
+            { index: 12, title: "12. Covalent Bond", text: "**Covalent Bond** – Chemical bond where atoms share electrons.", 
+              questions: [{ word: "Covalent Bond", options: ["A. Chemical bond where atoms share electrons", "B. Chemical bond formed through electron transfer", "C. Substance that accepts protons"], answerIndex: 0 }] },
+            { index: 13, title: "13. Ionic Bond", text: "**Ionic Bond** – Chemical bond formed through electron transfer.", 
+              questions: [{ word: "Ionic Bond", options: ["A. Chemical bond formed through electron transfer", "B. Chemical bond where atoms share electrons", "C. Substance that speeds up a chemical reaction"], answerIndex: 0 }] },
+            { index: 14, title: "14. Acid", text: "**Acid** – Substance that donates protons (H⁺ ions).", 
+              questions: [{ word: "Acid", options: ["A. Substance that donates protons (H⁺ ions)", "B. Substance that accepts protons or donates hydroxide (OH⁻)", "C. Stored energy due to position"], answerIndex: 0 }] },
+            { index: 15, title: "15. Base", text: "**Base** – Substance that accepts protons or donates hydroxide (OH⁻).", 
+              questions: [{ word: "Base", options: ["A. Substance that accepts protons or donates hydroxide (OH⁻)", "B. Substance that donates protons (H⁺ ions)", "C. Path through which electric current flows"], answerIndex: 0 }] },
+            { index: 16, title: "16. Catalyst", text: "**Catalyst** – Substance that speeds up a chemical reaction without being consumed.", 
+              questions: [{ word: "Catalyst", options: ["A. Substance that speeds up a chemical reaction without being consumed", "B. A device that stores electrical energy", "C. Electric potential difference"], answerIndex: 0 }] },
+            { index: 17, title: "17. Newton’s First Law", text: "**Newton’s First Law** – An object remains at rest or in uniform motion unless acted upon.", 
+              questions: [{ word: "Newton’s First Law", options: ["A. An object remains at rest or in uniform motion unless acted upon", "B. Force equals mass times acceleration", "C. For every action, there is an equal and opposite reaction"], answerIndex: 0 }] },
+            { index: 18, title: "18. Newton’s Second Law", text: "**Newton’s Second Law** – Force equals mass times acceleration (F = ma).", 
+              questions: [{ word: "Newton’s Second Law", options: ["A. Force equals mass times acceleration (F = ma)", "B. An object remains at rest or in uniform motion", "C. Product of force and displacement"], answerIndex: 0 }] },
+            { index: 19, title: "19. Newton’s Third Law", text: "**Newton’s Third Law** – For every action, there is an equal and opposite reaction.", 
+              questions: [{ word: "Newton’s Third Law", options: ["A. For every action, there is an equal and opposite reaction", "B. Product of force and displacement", "C. Rate at which work is done"], answerIndex: 0 }] },
+            { index: 20, title: "20. Work (Physics)", text: "**Work (Physics)** – Product of force and displacement in the direction of force.", 
+              questions: [{ word: "Work (Physics)", options: ["A. Product of force and displacement in the direction of force", "B. Capacity to do work", "C. Energy of a moving object"], answerIndex: 0 }] },
+            { index: 21, title: "21. Energy", text: "**Energy** – Capacity to do work.", 
+              questions: [{ word: "Energy", options: ["A. Capacity to do work", "B. Stored energy due to position", "C. Voltage equals current times resistance"], answerIndex: 0 }] },
+            { index: 22, title: "22. Kinetic Energy", text: "**Kinetic Energy** – Energy of a moving object.", 
+              questions: [{ word: "Kinetic Energy", options: ["A. Energy of a moving object", "B. Stored energy due to position", "C. Opposition to the flow of electric current"], answerIndex: 0 }] },
+            { index: 23, title: "23. Potential Energy", text: "**Potential Energy** – Stored energy due to position.", 
+              questions: [{ word: "Potential Energy", options: ["A. Stored energy due to position", "B. Energy of a moving object", "C. Rate at which work is done"], answerIndex: 0 }] },
+            { index: 24, title: "24. Power", text: "**Power** – Rate at which work is done.", 
+              questions: [{ word: "Power", options: ["A. Rate at which work is done", "B. Product of force and displacement", "C. Flow of electric charge"], answerIndex: 0 }] },
+            { index: 25, title: "25. Ohm’s Law", text: "**Ohm’s Law** – Voltage equals current times resistance (V = IR).", 
+              questions: [{ word: "Ohm’s Law", options: ["A. Voltage equals current times resistance (V = IR)", "B. Force equals mass times acceleration (F = ma)", "C. Flow of electric charge"], answerIndex: 0 }] },
+            { index: 26, title: "26. Circuit", text: "**Circuit** – Path through which electric current flows.", 
+              questions: [{ word: "Circuit", options: ["A. Path through which electric current flows", "B. Stores electrical energy", "C. Number of oscillations per second"], answerIndex: 0 }] },
+            { index: 27, title: "27. Capacitor", text: "**Capacitor** – Device that stores electrical energy in an electric field.", 
+              questions: [{ word: "Capacitor", options: ["A. Device that stores electrical energy in an electric field", "B. Stores energy in a magnetic field", "C. Resists the flow of electric current"], answerIndex: 0 }] },
+            { index: 28, title: "28. Inductor", text: "**Inductor** – Device that stores energy in a magnetic field.", 
+              questions: [{ word: "Inductor", options: ["A. Device that stores energy in a magnetic field", "B. Stores electrical energy in an electric field", "C. Distance between successive peaks of a wave"], answerIndex: 0 }] },
+            { index: 29, title: "29. Resistor", text: "**Resistor** – Device that resists the flow of electric current.", 
+              questions: [{ word: "Resistor", options: ["A. Device that resists the flow of electric current", "B. Device that allows current in one direction", "C. Device that amplifies electronic signals"], answerIndex: 0 }] },
+            { index: 30, title: "30. Magnetic Field", text: "**Magnetic Field** – Region around a magnet where magnetic forces are felt.", 
+              questions: [{ word: "Magnetic Field", options: ["A. Region around a magnet where magnetic forces are felt", "B. Wave of electric and magnetic fields", "C. Bending of waves around obstacles"], answerIndex: 0 }] },
+            { index: 31, title: "31. Electromagnetic Wave", text: "**Electromagnetic Wave** – Wave consisting of electric and magnetic fields oscillating perpendicularly.", 
+              questions: [{ word: "Electromagnetic Wave", options: ["A. Wave consisting of electric and magnetic fields oscillating perpendicularly", "B. Bouncing back of light", "C. The ability to understand things"], answerIndex: 0 }] },
+            { index: 32, title: "32. Frequency", text: "**Frequency** – Number of oscillations per second (Hz).", 
+              questions: [{ word: "Frequency", options: ["A. Number of oscillations per second (Hz)", "B. Distance between successive peaks", "C. Maximum displacement of a wave"], answerIndex: 0 }] },
+            { index: 33, title: "33. Wavelength", text: "**Wavelength** – Distance between successive peaks of a wave.", 
+              questions: [{ word: "Wavelength", options: ["A. Distance between successive peaks of a wave", "B. Number of oscillations per second", "C. Bending of waves when passing between media"], answerIndex: 0 }] },
+            { index: 34, title: "34. Amplitude", text: "**Amplitude** – Maximum displacement of a wave from equilibrium.", 
+              questions: [{ word: "Amplitude", options: ["A. Maximum displacement of a wave from equilibrium", "B. Number of oscillations per second", "C. Bouncing back of light"], answerIndex: 0 }] },
+            { index: 35, title: "35. Reflection", text: "**Reflection** – Bouncing back of light or sound from a surface.", 
+              questions: [{ word: "Reflection", options: ["A. Bouncing back of light or sound from a surface", "B. Bending of waves when passing between media", "C. Overlap of two or more waves"], answerIndex: 0 }] },
+            { index: 36, title: "36. Refraction", text: "**Refraction** – Bending of waves when passing between media.", 
+              questions: [{ word: "Refraction", options: ["A. Bending of waves when passing between media", "B. Bouncing back of light", "C. Bending of waves around obstacles"], answerIndex: 0 }] },
+            { index: 37, title: "37. Diffraction", text: "**Diffraction** – Bending of waves around obstacles.", 
+              questions: [{ word: "Diffraction", options: ["A. Bending of waves around obstacles", "B. Bending of waves between media", "C. Fusion of sperm and egg"], answerIndex: 0 }] },
+            { index: 38, title: "38. Interference", text: "**Interference** – When two or more waves overlap to form a new wave pattern.", 
+              questions: [{ word: "Interference", options: ["A. When two or more waves overlap to form a new wave pattern", "B. Bouncing back of light", "C. Disperses light into a spectrum"], answerIndex: 0 }] },
+            { index: 39, title: "39. Lens", text: "**Lens** – Transparent object that focuses or disperses light.", 
+              questions: [{ word: "Lens", options: ["A. Transparent object that focuses or disperses light", "B. Disperses light into a spectrum", "C. Opposition to the flow of electric current"], answerIndex: 0 }] },
+            { index: 40, title: "40. Prism", text: "**Prism** – Transparent object that disperses light into a spectrum.", 
+              questions: [{ word: "Prism", options: ["A. Transparent object that disperses light into a spectrum", "B. Focuses or disperses light", "C. Zero electrical resistance"], answerIndex: 0 }] },
+            { index: 41, title: "41. Voltage", text: "**Voltage** – Electric potential difference between two points.", 
+              questions: [{ word: "Voltage", options: ["A. Electric potential difference between two points", "B. Flow of electric charge", "C. Opposition to the flow of current"], answerIndex: 0 }] },
+            { index: 42, title: "42. Current", text: "**Current** – Flow of electric charge (Amperes).", 
+              questions: [{ word: "Current", options: ["A. Flow of electric charge (Amperes)", "B. Electric potential difference", "C. Zero electrical resistance"], answerIndex: 0 }] },
+            { index: 43, title: "43. Resistance", text: "**Resistance** – Opposition to the flow of electric current.", 
+              questions: [{ word: "Resistance", options: ["A. Opposition to the flow of electric current", "B. Zero electrical resistance", "C. Flow of electric charge"], answerIndex: 0 }] },
+            { index: 44, title: "44. Superconductivity", text: "**Superconductivity** – Zero electrical resistance at very low temperatures.", 
+              questions: [{ word: "Superconductivity", options: ["A. Zero electrical resistance at very low temperatures", "B. Conductivity between conductor and an insulator", "C. Used to amplify or switch electronic signals"], answerIndex: 0 }] },
+            { index: 45, title: "45. Semiconductor", text: "**Semiconductor** – Material with conductivity between a conductor and an insulator.", 
+              questions: [{ word: "Semiconductor", options: ["A. Material with conductivity between a conductor and an insulator", "B. Zero electrical resistance", "C. Allows current to flow in one direction"], answerIndex: 0 }] },
+            { index: 46, title: "46. Transistor", text: "**Transistor** – Semiconductor device used to amplify or switch electronic signals.", 
+              questions: [{ word: "Transistor", options: ["A. Semiconductor device used to amplify or switch electronic signals", "B. Allows current to flow in one direction", "C. Small computer on a single integrated circuit"], answerIndex: 0 }] },
+            { index: 47, title: "47. Diode", text: "**Diode** – Semiconductor that allows current to flow in one direction.", 
+              questions: [{ word: "Diode", options: ["A. Semiconductor that allows current to flow in one direction", "B. Used to amplify or switch electronic signals", "C. Small computer on a single integrated circuit"], answerIndex: 0 }] },
+            { index: 48, title: "48. Microcontroller", text: "**Microcontroller** – Small computer on a single integrated circuit.", 
+              questions: [{ word: "Microcontroller", options: ["A. Small computer on a single integrated circuit", "B. Simulation of human intelligence", "C. Focused on designing robots"], answerIndex: 0 }] },
+            { index: 49, title: "49. Robotics", text: "**Robotics** – Branch of engineering focused on designing robots.", 
+              questions: [{ word: "Robotics", options: ["A. Branch of engineering focused on designing robots", "B. Machines learn patterns from data", "C. Computational model inspired by biological neurons"], answerIndex: 0 }] },
+            { index: 50, title: "50. Artificial Intelligence (AI)", text: "**Artificial Intelligence (AI)** – Simulation of human intelligence by machines.", 
+              questions: [{ word: "Artificial Intelligence (AI)", options: ["A. Simulation of human intelligence by machines", "B. Machines learn patterns from data", "C. Using control systems to operate machinery"], answerIndex: 0 }] }
+        ];
+
+        // 拼接完整的播放文本，用于 full story 模式
+        const fullStoryContent = rawStories.map(s => {
+            // 移除粗体标签，使朗读更自然
+            const cleanText = s.text.replace(/<\/?b>/g, ''); 
+            return `${s.title}. ${cleanText}`;
+        }).join(' ');
+
+
+        // --- DOM Elements and State ---
+        const playButton = document.getElementById('playButton');
+        const quizModeButton = document.getElementById('quizModeButton');
+        const nextQuestionButton = document.getElementById('nextQuestionButton'); 
+        const quizStopButton = document.getElementById('quizStopButton'); 
+        const instructionHeader = document.getElementById('instructionHeader');
+        const storiesContainer = document.getElementById('storiesContainer');
+        const quizContainer = document.getElementById('quizContainer');
+        const quizQuestionDisplay = document.getElementById('quizQuestionDisplay');
+        const quizStatus = document.getElementById('quizStatus');
+        const quizNavigation = document.getElementById('quizNavigation'); 
+        
+        let quizQuestions = []; 
+        let currentQuizIndex = 0;
+        let isQuizMode = false;
+        let userScore = 0;
+        let isSpeaking = false; 
+        let isAdvancing = false; // State flag to prevent double clicks on Next Question
+
+        // --- Speech Synthesis Setup ---
+        let synth = window.speechSynthesis;
+        let voiceLoaded = false;
+        let femaleVoice = null;
+        let currentUtterance = null; 
+        
+        // 找到合适的女性声音
+        function findFemaleVoice(voices) {
+            return voices.find(voice => 
+                voice.lang.startsWith('en') && 
+                (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('woman') || voice.name.toLowerCase().includes('zira') || voice.name.toLowerCase().includes('helen'))
+            ) || voices.find(voice => voice.lang.startsWith('en')); // Fallback to any English voice
+        }
+
+        // 声音加载完成后设置 voiceLoaded 标志
+        function handleVoicesChanged() {
+            const voices = synth.getVoices();
+            femaleVoice = findFemaleVoice(voices);
+            voiceLoaded = true;
+            console.log("Voice loaded successfully.");
+        }
+
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = handleVoicesChanged;
+        } else {
+            // 某些浏览器需要延迟加载
+            setTimeout(handleVoicesChanged, 100); 
+        }
+
+        // Stops any ongoing speech
+        function cancelSpeech() {
+            if (synth.speaking || synth.pending || synth.paused) {
+                synth.cancel();
+            }
+            if (currentUtterance) {
+                currentUtterance.onend = null; 
+            }
+            // Reset full story button state
+            playButton.textContent = '▶️ Play Full Concepts';
+            playButton.classList.remove('active-stop');
+            isSpeaking = false;
+            // Ensure next button is enabled if in quiz mode
+            if (isQuizMode) {
+                 nextQuestionButton.disabled = false;
+                 isAdvancing = false;
+            }
+        }
+        
+        // --- Full Story Playback Logic ---
+
+        function highlightStory(index) {
+            clearHighlight();
+            const targetSection = document.querySelector(`.story-section[data-story-index="${index}"]`);
+            if (targetSection) {
+                targetSection.classList.add('highlighted');
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function clearHighlight() {
+            document.querySelectorAll('.story-section').forEach(section => section.classList.remove('highlighted'));
+            document.querySelectorAll('.quiz-question-card').forEach(card => card.classList.remove('highlighted'));
+        }
+
+        function speakFullStory(textToSpeak) {
+            // 确保播放前先停止
+            cancelSpeech(); 
+            
+            // 核心循环逻辑
+            const loopStory = () => {
+                if (!isSpeaking || isQuizMode) return; // Only loop if in full story mode and not manually stopped
+                
+                currentUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                if (femaleVoice) {
+                    currentUtterance.voice = femaleVoice;
+                }
+                currentUtterance.rate = 0.9; 
+                currentUtterance.pitch = 1.0; 
+
+                // Text Highlighting 
+                currentUtterance.onboundary = (event) => {
+                    if (event.name === 'word') {
+                        // 尝试根据标题匹配，进行高亮显示
+                        rawStories.forEach(story => {
+                            const title = story.title.split('.')[0] + '.'; 
+                            const speechTextSlice = textToSpeak.substring(event.charIndex, event.charIndex + title.length + 5); 
+                            
+                            if (speechTextSlice.includes(title)) {
+                                highlightStory(story.index);
+                            }
+                        });
+                    }
+                };
+
+                currentUtterance.onend = () => {
+                    if (isSpeaking && !isQuizMode) {
+                        // 朗读完毕，如果没有停止，则继续循环
+                        console.log("Full story finished, restarting...");
+                        loopStory(); 
+                    } else {
+                        // 如果用户停止了，或者进入了 Quiz 模式，则重置按钮状态
+                        cancelSpeech();
+                    }
+                };
+
+                currentUtterance.onerror = (event) => {
+                    console.error('Speech synthesis error:', event);
+                    cancelSpeech();
+                    alert('Error during speech playback.');
+                };
+
+                synth.speak(currentUtterance);
+            };
+
+            // Start the speaking
+            isSpeaking = true;
+            playButton.textContent = '⏸️ Stop Reading'; // Changed to Stop
+            playButton.classList.add('active-stop');
+            storiesContainer.style.display = 'block';
+
+            loopStory();
+        }
+
+
+        playButton.addEventListener('click', () => {
+            if (!synth || !voiceLoaded) {
+                alert("Speech voices are not ready. Please wait a moment or try another browser.");
+                return;
+            }
+            
+            // Exit Quiz Mode and ensure it's Full Story Mode
+            if (isQuizMode) {
+                isQuizMode = false;
+                quizContainer.style.display = 'none';
+                storiesContainer.style.display = 'block';
+                instructionHeader.textContent = "Instruction: Listen to the core concepts being read aloud. As you listen, choose the correct definition for the bolded science/engineering term.";
+            }
+
+            if (isSpeaking) {
+                // 如果正在播放，则停止
+                cancelSpeech();
+            } else {
+                // 如果没有播放，则开始播放
+                speakFullStory(fullStoryContent);
+            }
+        });
+
+        // --- Initial Story Rendering for Full Playback ---
+        function renderFullStories() {
+            storiesContainer.innerHTML = rawStories.map(story => {
+                let html = `<div class="story-section" data-story-index="${story.index}">
+                    <h3 id="story-title-${story.index}">${story.title}</h3>
+                    <p class="story-text">${story.text}</p>`;
+                
+                story.questions.forEach((q, qIndex) => {
+                    html += `<div class="question">What is the definition of <b>${q.word}</b>?</div>
+                        <div class="options">`;
+                    q.options.forEach((opt, optIndex) => {
+                        html += `<label><input type="radio" name="q${story.index}${qIndex}" value="${optIndex}">${opt}</label>`;
+                    });
+                    html += `</div>`;
+                });
+                
+                html += `</div>`;
+                return html;
+            }).join('');
+        }
+        renderFullStories();
+
+
+        // --- Quiz Mode Logic (Modified for Loop and Full Read) ---
+
+        // Flatten all questions into a single array for quiz navigation
+        function setupQuizQuestions() {
+            quizQuestions = [];
+            rawStories.forEach(story => {
+                story.questions.forEach((q, qIndex) => {
+                    quizQuestions.push({
+                        storyIndex: story.index,
+                        storyTitle: story.title,
+                        storyText: story.text.replace(/<\/?b>/g, ''), // Clean context
+                        question: `What is the definition of **${q.word}**?`,
+                        options: q.options,
+                        answer: q.answerIndex,
+                        fullId: `q${story.index}${qIndex}`,
+                        word: q.word
+                    });
+                });
+            });
+            // Shuffle quizQuestions if you want a random order (optional)
+        }
+        setupQuizQuestions();
+
+        function speakQuizQuestion(questionObj, qNum) {
+            nextQuestionButton.disabled = true; // Disable Next button while speaking
+            isAdvancing = true; // Set advancing lock
+            
+            const storyTextClean = questionObj.storyText;
+            const questionWord = questionObj.word;
+
+            // 构造完整的朗读文本：故事上下文 + 问题 + 选项
+            const optionsText = questionObj.options.map((opt, i) => `${String.fromCharCode(65 + i)} is ${opt.substring(3)}`).join('. ');
+            
+            // 完整朗读文本：包含故事标题、故事内容、问题和选项
+            const speechText = `${questionObj.storyTitle}. ${storyTextClean}. The question is: What is the definition of ${questionWord}? The options are: ${optionsText}`;
+            
+            // 核心循环逻辑
+            const loopQuiz = () => {
+                if (!isSpeaking || !isQuizMode) return; // Only loop if in quiz mode and not manually stopped
+                
+                currentUtterance = new SpeechSynthesisUtterance(speechText);
+                if (femaleVoice) {
+                    currentUtterance.voice = femaleVoice;
+                }
+                currentUtterance.rate = 0.9; 
+                currentUtterance.pitch = 1.0; 
+                
+                // Highlight card while speaking
+                const card = document.getElementById(`quiz-card-${qNum}`);
+                if (card) {
+                    card.classList.add('highlighted');
+                }
+
+                currentUtterance.onend = () => {
+                    if (card) {
+                        card.classList.remove('highlighted');
+                    }
+                    if (isSpeaking && isQuizMode) {
+                        // 朗读完毕，如果没有停止，则继续循环
+                        console.log(`Quiz question ${qNum} finished, restarting...`);
+                        loopQuiz(); 
+                    } else {
+                        // Speech stopped (either by user or end of quiz mode)
+                        nextQuestionButton.disabled = false; // Re-enable if in quiz mode
+                        isAdvancing = false;
+                        cancelSpeech();
+                    }
+                };
+
+                currentUtterance.onerror = (event) => {
+                    console.error('Quiz speech synthesis error:', event);
+                    nextQuestionButton.disabled = false; // Re-enable on error
+                    isAdvancing = false;
+                    cancelSpeech();
+                };
+                
+                synth.speak(currentUtterance);
+            };
+
+            // Start the speaking
+            isSpeaking = true;
+            loopQuiz();
+        }
+        
+        function renderCurrentQuizQuestion() {
+            cancelSpeech(); // Stop any previous speech
+            
+            if (currentQuizIndex >= quizQuestions.length) {
+                // Quiz is over
+                quizQuestionDisplay.innerHTML = `<h2>Quiz Finished!</h2><p>Louis scored ${userScore} out of ${quizQuestions.length}. Keep up the great work!</p>`;
+                quizStatus.textContent = `Completed: ${quizQuestions.length} / ${quizQuestions.length} | Final Score: ${userScore}`;
+                quizNavigation.style.display = 'none'; // Hide next/stop buttons
+                nextQuestionButton.disabled = true;
+                return;
+            }
+
+            const currentQ = quizQuestions[currentQuizIndex];
+            const qNum = currentQuizIndex + 1;
+
+            // 1. Render the HTML for the current question
+            const storyTextWithBold = rawStories.find(s => s.index === currentQ.storyIndex).text;
+
+            let html = `<div class="quiz-question-card" id="quiz-card-${qNum}">
+                <h3>Question ${qNum} of ${quizQuestions.length}</h3>
+                <p class="quiz-story-text"><b>Concept:</b> ${storyTextWithBold}</p>
+                <div class="question">${currentQ.question}</div>
+                <div class="options" data-question-id="${currentQ.fullId}">`;
+
+            currentQ.options.forEach((opt, optIndex) => {
+                const labelText = opt.startsWith('A. ') || opt.startsWith('B. ') || opt.startsWith('C. ') ? opt : `${String.fromCharCode(65 + optIndex)}. ${opt}`;
+                html += `<label data-option-index="${optIndex}">
+                            <input type="radio" name="${currentQ.fullId}" value="${optIndex}" style="display:none;">
+                            ${labelText}
+                        </label>`;
+            });
+            
+            html += `</div></div>`;
+            quizQuestionDisplay.innerHTML = html;
+            
+            // 2. Update status and scroll
+            quizStatus.textContent = `Question: ${qNum} / ${quizQuestions.length} | Score: ${userScore}`;
+            quizNavigation.style.display = 'flex'; // Show next/stop buttons
+            document.getElementById(`quiz-card-${qNum}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // 3. Set up event listeners for the options 
+            document.querySelectorAll(`#quiz-card-${qNum} .options label`).forEach(label => {
+                label.addEventListener('click', handleAnswerClick);
+            });
+            
+            // 4. Speak the question and options
+            speakQuizQuestion(currentQ, qNum);
+        }
+
+        function handleAnswerClick(event) {
+            cancelSpeech(); // Stop speech immediately upon user interaction
+            isSpeaking = false; 
+            nextQuestionButton.disabled = false; // Enable next button after answer
+
+            const label = event.currentTarget;
+            const selectedIndex = parseInt(label.getAttribute('data-option-index'));
+            const currentQ = quizQuestions[currentQuizIndex];
+            
+            // Check answer 
+            const isCorrect = selectedIndex === currentQ.answer;
+            if (isCorrect) {
+                userScore++;
+                label.style.backgroundColor = '#b7e4c7'; // Light Green
+            } else {
+                label.style.backgroundColor = '#ffcdd2'; // Light Red
+                // Highlight correct answer
+                const correctLabel = document.querySelector(`#quiz-card-${currentQuizIndex + 1} .options label[data-option-index="${currentQ.answer}"]`);
+                if(correctLabel) correctLabel.style.border = '2px solid green';
+            }
+            
+            // Disable all options for this question
+            document.querySelectorAll(`#quiz-card-${currentQuizIndex + 1} .options label`).forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+
+            // Update score display immediately
+            quizStatus.textContent = `Question: ${currentQuizIndex + 1} / ${quizQuestions.length} | Score: ${userScore}`;
+        }
+
+        nextQuestionButton.addEventListener('click', () => {
+            if (isAdvancing) return; // Prevent rapid multiple clicks
+            
+            if (quizQuestions.length > 0 && currentQuizIndex < quizQuestions.length) {
+                // Set lock and advance
+                isAdvancing = true; 
+                currentQuizIndex++;
+                renderCurrentQuizQuestion();
+            } else if (currentQuizIndex === quizQuestions.length) {
+                alert("The quiz is finished!");
+                isAdvancing = false;
+            }
+        });
+        
+        quizStopButton.addEventListener('click', () => {
+            cancelSpeech(); 
+            isSpeaking = false;
+        });
+
+        quizModeButton.addEventListener('click', () => {
+            if (!synth || !voiceLoaded) {
+                alert("Speech voices are not ready. Please wait a moment or try another browser.");
+                return;
+            }
+            
+            cancelSpeech(); 
+            
+            // Enter Quiz Mode
+            isQuizMode = true;
+            currentQuizIndex = 0;
+            userScore = 0;
+            
+            storiesContainer.style.display = 'none';
+            quizContainer.style.display = 'block';
+            instructionHeader.textContent = "Instruction: Louis's STEM Quiz! Listen to the concept and choose the correct definition.";
+            
+            // Start the quiz
+            renderCurrentQuizQuestion();
+        });
+
+
+        // --- General Utility Functions ---
+        
+        // --- Full Text Display ---
+        function populateFullText() {
+            const fullTextDropdown = document.getElementById('fullTextDropdown');
+            const dropdownHTML = rawStories.map(story => 
+                // Replacing <b> tags with bold styling for the dropdown view
+                `<p><b>${story.title}</b><br>${story.text.trim().replace(/<\/?b>/g, '')}</p>` 
+            ).join('');
+            fullTextDropdown.innerHTML = dropdownHTML;
+        }
+        populateFullText(); 
+
+        // --- Title Edit Functionality ---
+        const editTitleButton = document.getElementById('editTitleButton');
+        const wavyTitleDiv = document.getElementById('wavyTitle');
+
+        // 【修改点 4】：简化 setWavyTitle，仅根据是否有文字决定是否添加实心样式
+        function setWavyTitle(text) {
+            const trimmedText = text.trim();
+            wavyTitleDiv.innerHTML = ''; 
+            
+            // 如果有文字，添加实心样式；如果没有文字，移除实心样式（保持空白）
+            if (trimmedText.length > 0) {
+                wavyTitleDiv.classList.add('wavy-title-solid');
+            } else {
+                wavyTitleDiv.classList.remove('wavy-title-solid');
+            }
+
+            for (let i = 0; i < trimmedText.length; i++) {
+                const char = trimmedText[i];
+                const span = document.createElement('span');
+                span.textContent = char === ' ' ? '\u00A0' : char; 
+                span.style.animationDelay = `${i * 0.1}s`;
+                wavyTitleDiv.appendChild(span);
+            }
+        }
+        
+        // 【修改点 5】：移除默认标题设置，确保初始状态空白
+        // setWavyTitle("Louis's STEM Core Concepts", false); // 移除此行
+
+        editTitleButton.addEventListener('click', () => {
+            const currentText = wavyTitleDiv.textContent.replace(/\u00A0/g, ' ').trim(); 
+            const newText = prompt("Enter the new title text:", currentText);
+            
+            if (newText !== null) { // 允许用户输入空字符串来清空标题
+                setWavyTitle(newText); 
+            }
+        });
+
+        // --- Slideshow Functionality (From original) ---
+        const imageUpload = document.getElementById('imageUpload');
+        const imageSlideshow = document.getElementById('imageSlideshow');
+        let slideshowImages = [];
+        let currentImageIndex = 0;
+        let slideshowInterval;
+
+        function startSlideshow() {
+            if (slideshowInterval) clearInterval(slideshowInterval);
+            if (slideshowImages.length < 2) return; 
+
+            slideshowInterval = setInterval(() => {
+                showNextImage();
+            }, 3000); 
+        }
+
+        function showNextImage() {
+            if (slideshowImages.length === 0) return;
+
+            if (slideshowImages[currentImageIndex]) {
+                slideshowImages[currentImageIndex].classList.remove('active');
+            }
+            
+            currentImageIndex = (currentImageIndex + 1) % slideshowImages.length;
+            slideshowImages[currentImageIndex].classList.add('active');
+        }
+
+        imageUpload.addEventListener('change', (event) => {
+            const files = event.target.files;
+            if (files.length === 0) return;
+
+            imageSlideshow.innerHTML = '';
+            slideshowImages = [];
+
+            let loadedCount = 0;
+            const tempImages = new Array(files.length);
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = `Uploaded image ${i+1}`;
+                        tempImages[i] = img; 
+                        loadedCount++;
+                        
+                        if (loadedCount === files.length) {
+                            slideshowImages = tempImages.filter(img => img !== undefined);
+                            slideshowImages.forEach(img => imageSlideshow.appendChild(img));
+
+                            currentImageIndex = -1; 
+                            showNextImage();
+                            startSlideshow();
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    loadedCount++; 
+                }
+            }
+        });
+
+        function setupDefaultImage() {
+            const defaultImg = document.createElement('img');
+            defaultImg.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiM2NjYiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9ImFyaWFsIiBmb250LXNpemU9IjI0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+Q2xpY2sgJ1VwbG9hZCBJbWFnZXMnIHRvIHN0YXJ0IHRoZSBzbGlkZXNob3cuPC90ZXh0Pjwvc3ZnPg==';
+            defaultImg.alt = 'Upload images to start slideshow';
+            defaultImg.classList.add('active');
+            defaultImg.style.objectFit = 'cover'; 
+            imageSlideshow.appendChild(defaultImg);
+            slideshowImages.push(defaultImg); 
+        }
+        setupDefaultImage();
+    </script>
+
+</body>
+</html>
